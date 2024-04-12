@@ -3,10 +3,9 @@ import ac
 from color_palette import Colors
 from config_handler import Config
 from ac_data import ACGlobalData, ACCarData 
-from drawables import Trace, PedalBar, SteeringWheel
+from drawables import Trace, PedalBar
 from app_window import AppWindow
-from ac_label import ACLabel
-from ac_gl_utils import Point
+from lib.sim_info import info
 
 # Initialize general object variables
 cfg = None
@@ -105,8 +104,20 @@ def acUpdate(deltaT):
         # Update ac car data
         ac_car_data.update()
 
-        # Update data for pedalbar and wheelindicator drawables
-        wheel_indicator.update(ac_car_data.steering)
+        # Update data for drawables
+        throttle_bar.color = Colors.green
+        brake_bar.color = Colors.red
+
+        # For each wheel check for slip or lock
+        wheelSlip = info.physics.wheelSlip
+        for wheelIndex in range(4):
+            if wheelSlip[wheelIndex] < 1:
+                continue
+            elif wheelSlip[wheelIndex] < 20: # wheel spin
+                throttle_bar.color = Colors.purple
+            else: # wheel lock
+                brake_bar.color = Colors.orange
+
         throttle_bar.update(ac_car_data.throttle)
         brake_bar.update(ac_car_data.brake)
 
