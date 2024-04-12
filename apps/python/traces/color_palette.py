@@ -7,3 +7,6 @@ class Colors:
     grey = (0.35, 0.35, 0.35, 1)
     light_grey = (0.6, 0.6, 0.6, 1)
     yellow = (1, 0.8, 0, 1)
+    purple = (0.81, 0, 0.98, 1)
+    orange = (0.99, 0.7, 0, 1)
+    
