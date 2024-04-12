@@ -17,6 +17,11 @@ The app is user configurable and is integrated with Content Manager. After first
 * Due to the absence of full OpenGL implementation by Kunos for Python apps, the drawing of the telemetry lines is quite resource intensive. This scales directly with the number of input traces (drawing two traces is heavier than one), the sample rate and the time length of the graph.
 * Currently when the app is not visible, it still carries out some calculations in the background. This costs some performance and may get fixed in the future.
 
+## Specific changes in this fork
+
+* Wheel input, clutch bar, speed and gear indicators have been removed.
+* Added wheel slip/lock detection. When slip is detected, the throttle bar turns purple. When lock is detected, the brake bar turns orange.
+
 ## Credits
 
 * Frits, creator of ac-traces app
