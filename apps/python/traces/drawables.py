@@ -4,7 +4,6 @@ import acsys
 from collections import deque
 
 from ac_gl_utils import Point
-from ac_gl_utils import Line
 from ac_gl_utils import Triangle
 from ac_gl_utils import Quad
 
@@ -183,89 +182,6 @@ class PedalBar:
         ac.glVertex2f(self.origin.x,
                       self.origin.y - (self.full_height * self.pedal_input))
         ac.glEnd()
-
-
-class SteeringWheel:
-    """Driver steering wheel input indicator drawable.
-    
-    Args:
-        cfg (obj:Config): App configuration.
-        color (tuple): r,g,b,a on a 0-1 scale.
-    """
-    def __init__(self, cfg, color):
-        self.cfg = cfg
-        self.color = color
-
-        # Center of rotation coordinates of the steering wheel.
-        self.origin = Point(1935 * self.cfg.app_scale,
-                            300 * self.cfg.app_scale)
-        
-        # Radius to inside and outside of steering wheel rim.
-        self.outer_radius = 150 * self.cfg.app_scale
-        self.ratio_inner_outer_radius = 112 / 150
-        self.inner_radius = self.outer_radius * self.ratio_inner_outer_radius
-
-        # Build initial renderqueue based on straight wheel.
-        # This will get rotated by updating the steering wheel angle.
-        self.center_p_outer = Point(self.origin.x,
-                                 self.origin.y - self.outer_radius)
-        self.center_p_inner = Point(self.origin.x,
-                                 self.origin.y - self.inner_radius)
-
-        # Built on the basis of one starting line connecting the inside and
-        # outside of the rim at the center. Copy the center line with rotation offsets, 
-        # and build a base renderqueue of quads from it.
-        self.start_line = Line(self.center_p_inner, self.center_p_outer)
-
-        self.line_list = []
-        self.base_quads = []
-        self.offsets = [-0.2, -0.15, -0.1, -0.05, 0, 0.05, 0.1, 0.15, 0.2]
-        for i, offset in enumerate(self.offsets):
-            line = self.start_line.copy()
-            line.rotate_rad(offset, self.origin)
-            self.line_list.append(line)
-
-            if i == 0:
-                pass
-            else:
-                line_lag = self.line_list[i-1]
-
-                p1 = Point(line.points[0].x, line.points[0].y)
-                p2 = Point(line.points[1].x, line.points[1].y)
-                p3 = Point(line_lag.points[1].x, line_lag.points[1].y)
-                p4 = Point(line_lag.points[0].x, line_lag.points[0].y)
-                quad = Quad(p1, p2, p3, p4)
-                self.base_quads.append(quad)
-
-        # Initialize empty renderqueue
-        self.render_queue = []
-
-    def update(self, angle):
-        """Update steering wheel indicator.
-
-        Args:
-            angle (float): Steering wheel angle in radians.
-        """
-        _render_queue = []
-
-        for quad in self.base_quads:
-            new_quad = quad.copy()
-            new_quad.rotate_rad(angle, self.origin)
-            _render_queue.append(new_quad)
-
-        self.render_queue = _render_queue
-
-    def draw(self):
-        """Draw steering wheel indicator"""
-        set_color(self.color)
-        for quad in self.render_queue:
-            ac.glBegin(acsys.GL.Quads)
-            ac.glVertex2f(quad.points[0].x, quad.points[0].y)
-            ac.glVertex2f(quad.points[1].x, quad.points[1].y)
-            ac.glVertex2f(quad.points[2].x, quad.points[2].y)
-            ac.glVertex2f(quad.points[3].x, quad.points[3].y)
-            ac.glEnd()
-
 
 def set_color(rgba):
     """Apply RGBA color for GL drawing.

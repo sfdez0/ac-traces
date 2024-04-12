@@ -42,7 +42,6 @@ class ACGlobalData:
         self.focused_car = ac.getFocusedCar()
         self.replay_time_multiplier = info.graphics.replayTimeMultiplier
 
-
 class ACCarData:
     """Handling all data from AC that is car-specific.
     
@@ -56,19 +55,9 @@ class ACCarData:
         self.car_id = car_id
 
         # Initialize data attributes
-        self.speed = 0
         self.throttle = 0
         self.brake = 0
-        self.clutch = 0
-        self.gear = 0
-        self.steering = 0
         self.ffb = 0
-
-        # Normalized steering for steering trace
-        self.steering_normalized = 0.5
-        self.steering_cap = self.cfg.trace_steering_cap * math.pi / 180
-
-        self.gear_text = "N"
     
     def set_car_id(self, car_id):
         """Update car ID to retrieve data from.
@@ -81,26 +70,4 @@ class ACCarData:
         """Update data."""
         self.throttle = ac.getCarState(self.car_id, acsys.CS.Gas)
         self.brake = ac.getCarState(self.car_id, acsys.CS.Brake)
-        self.clutch = 1 - ac.getCarState(self.car_id, acsys.CS.Clutch)
         self.ffb = ac.getCarState(self.car_id, acsys.CS.LastFF)
-        self.steering = ac.getCarState(self.car_id, acsys.CS.Steer) * math.pi / 180
-        self.gear = ac.getCarState(self.car_id, acsys.CS.Gear)
-
-        if self.cfg.use_kmh:
-            self.speed = ac.getCarState(self.car_id, acsys.CS.SpeedKMH)
-        else:
-            self.speed = ac.getCarState(self.car_id, acsys.CS.SpeedMPH)
-
-        self.steering_normalized = 0.5 - (self.steering / (2 * self.steering_cap))
-        if self.steering_normalized > 1:
-            self.steering_normalized = 1
-        elif self.steering_normalized < 0:
-            self.steering_normalized = 0
-
-        # Gear label
-        if self.gear == 0:
-            self.gear_text = "R"
-        elif self.gear == 1:
-            self.gear_text = "N"
-        else:
-            self.gear_text = str(self.gear - 1)
