@@ -19,4 +19,5 @@ The app is user configurable and is integrated with Content Manager. After first
 
 ## Credits
 
+* Frits, creator of ac-traces app
 * Rombik, for the Assetto Corsa shared memory library.
